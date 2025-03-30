@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Step 5: Attachments</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+    .container { max-width: 700px; margin: 60px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .logo { text-align: center; margin-bottom: 20px; }
+    .logo img { max-height: 60px; }
+    form label { display: block; margin-top: 15px; font-weight: bold; }
+    form input, form select, form textarea, form button {
+      width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;
+    }
+    form button { background-color: #0073bb; color: white; font-weight: bold; cursor: pointer; margin-top: 20px; }
+    form button:hover { background-color: #005fa3; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">
+    <img src="orion_logo.png" alt="Orion Logo">
+  </div>
+
+<form action="complete.html">
+  <label>Upload Item Photo:</label>
+  <input type="file" onfocus="logFieldInteraction('Upload Photo')">
+  <label>Return Label Generated?</label>
+  <input type="checkbox" onfocus="logFieldInteraction('Label Generated')" onchange="captureData('Label Generated', this.checked)"> Yes
+  <button type="submit">Finish</button>
+</form>
+
+</div>
+<div style="position: fixed; right: 0; top: 0; width: 320px; height: 100vh; background: #f9f9f9; border-left: 2px solid #ccc; padding: 10px; overflow-y: auto; font-size: 14px;">
+  <h3>Condor Tracking Log</h3>
+  <div id="log">Tracking started...</div>
+  <p id="timer"></p>
+</div>
+<script>
+  let startTime = Date.now();
+  const inputData = {};
+  function utcNow() {{ return new Date().toISOString(); }}
+  function updateTimer() {{
+    const now = Date.now();
+    const seconds = Math.floor((now - startTime) / 1000);
+    document.getElementById('timer').innerText = "Time on page: " + seconds + "s";
+  }}
+  setInterval(updateTimer, 1000);
+  function logFieldInteraction(fieldName) {{
+    const log = document.getElementById('log');
+    const entry = document.createElement('div');
+    entry.textContent = utcNow() + " - Interacted: " + fieldName;
+    log.appendChild(entry);
+  }}
+  function captureData(field, value) {{
+    inputData[field] = value;
+    const log = document.getElementById('log');
+    const entry = document.createElement('div');
+    entry.textContent = utcNow() + " - Entered: " + field + ": " + value;
+    log.appendChild(entry);
+  }}
+  window.addEventListener('beforeunload', () => {{
+    const timeSpent = Math.round((Date.now() - startTime) / 1000);
+    localStorage.setItem(window.location.pathname + '_time', timeSpent);
+    localStorage.setItem(window.location.pathname + '_data', JSON.stringify(inputData));
+  }});
+</script>
+</body>
+</html>
